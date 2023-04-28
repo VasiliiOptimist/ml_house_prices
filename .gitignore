@@ -6,4 +6,6 @@ model_results.log
 submission.csv
 /__pycache__
 
+.vscode/
+
 
