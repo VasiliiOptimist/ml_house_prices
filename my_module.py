@@ -120,12 +120,12 @@ def showRegressionResults(trainHistory):
 
 
 def test_nulls(df):
-    s_null = df.isnull().sum()
-    nulls = []
-    for feature in df.isnull().sum().index:
+    s_null = df.isna().sum()
+    nans = []
+    for feature in df.isna().sum().index:
         if s_null[feature] != 0:
-            nulls.append(feature)
-    assert len(nulls) == 0, f"Nulls in columns:\n {nulls}"
+            nans.append(feature)
+    assert len(nans) == 0, f"NaNs in columns:\n {nans}"
     print("Engineered features do not contain nulls.")
 
 
