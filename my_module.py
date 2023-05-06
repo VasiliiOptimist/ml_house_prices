@@ -90,9 +90,9 @@ def check_distribution(
 
 def print_evaluate_regression(true, predicted):
     mse = metrics.mean_squared_error(true, predicted)
-    rmsle = metrics.mean_squared_log_error(true, predicted)
+    msle = metrics.mean_squared_log_error(true, predicted)
     print("MSE:", mse)
-    print("RMSLE:", rmsle)
+    print("RMSLE:", msle)
     print("______")
 
 
