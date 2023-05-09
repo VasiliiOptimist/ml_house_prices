@@ -10,7 +10,7 @@ from sklearn import metrics
 # CHANGE DATA
 
 
-def delete_nan_column(df: pd.DataFrame, threshold: float):
+def delete_nan_column(df: pd.DataFrame, threshold: float, NaN: str = np.nan):
     """
     Delete all the columns in which the number of nan values
     more than the threshold (in per cent)
@@ -18,9 +18,11 @@ def delete_nan_column(df: pd.DataFrame, threshold: float):
     Args:
         df: data frame containing the features
         threshold: value from 0 to 1
+        NaN: string nan value, if it is not np.nan
     Return:
         df_new: df without the deleted columns
     """
+    df = df.apply(lambda x: np.NaN if str(x) == NaN else x)
     df_nulls = df.isnull().sum()
     limit = df.shape[0] * (1 - threshold)
     cols_to_delete = []
@@ -29,21 +31,6 @@ def delete_nan_column(df: pd.DataFrame, threshold: float):
             cols_to_delete.append(col)
 
     return df.drop(cols_to_delete, axis=1)
-
-
-def get_type_features(df: pd.DataFrame, types: list):
-    """
-    Find all features with a type in the types list
-
-    Args:
-        df: DataFrame
-        types: list of types as string
-    """
-    cols = []
-    for col in df:
-        if df[col].dtype in types:
-            cols.append(col)
-    return cols
 
 
 def get_corr_features(df: pd.DataFrame, threshold: float):
@@ -77,10 +64,10 @@ def check_distribution(
     Return:
         res: DataFrame with bool values. True - ditribution is same
     """
-    res = pd.DataFrame()
+    res = pd.Series()
     for col in train.columns:
         st, p = stats.ttest_ind(train[col], test[col])
-        res[col] = [p >= p_threshold]
+        res[col] = p >= p_threshold
 
     return res
 
@@ -90,9 +77,11 @@ def check_distribution(
 
 def print_evaluate_regression(true, predicted):
     mse = metrics.mean_squared_error(true, predicted)
-    msle = metrics.mean_squared_log_error(true, predicted)
+    rmsle = metrics.mean_squared_log_error(true, predicted, squared=False)
+    r2 = metrics.r2_score(true, predicted)
     print("MSE:", mse)
-    print("RMSLE:", msle)
+    print("RMSLE:", rmsle)
+    print("R2:", r2)
     print("______")
 
 
@@ -134,8 +123,9 @@ def test_nulls(df):
 
 def log_evaluate_regression(true, predicted):
     mse = metrics.mean_squared_error(true, predicted)
-    rmsle = metrics.mean_squared_log_error(true, predicted)
-    r2_square = metrics.r2_score(true, predicted)
+    rmsle = metrics.mean_squared_log_error(true, predicted, squared=False)
+    r2 = metrics.r2_score(true, predicted)
     logging.info(f"MSE:, {mse}")
-    logging.info(f"RMSLE:, { rmsle }")
+    logging.info(f"RMSLE:, {rmsle}")
+    logging.info(f"R2:, {r2}")
     logging.info("______")
